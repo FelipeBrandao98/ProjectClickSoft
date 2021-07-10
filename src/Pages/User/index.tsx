@@ -57,8 +57,9 @@ const UserContainer = styled.View`
 const CardContainer = styled.View`
   background-color: #FFF;
   height: 100%;
-  padding-top: 30px;
-  margin: 27px;
+  padding-top: 10px;
+  margin: 10px;
+  margin-top: 28px;
   border-radius: 15px;
 `
 
@@ -171,38 +172,14 @@ const MapView = styled.View`
 
 const User = ({ route, navigation }) => {
   const [user, setUser] = useState([])
-  const [coordinates, setCoordinates] = useState([])
 
   const { userId } = route.params
 
   async function loadUser() {
     const response: userResponse = await api.get(`users?id=${userId}`)
-
     setUser([... user, ... response.data])
   }
 
-  function getCoordinateNumber(coordinate) {
-    const lat = convertCoordinatesStringToNumber(user.address.geo.lat)
-    const lng = convertCoordinatesStringToNumber(user.address.geo.lng)
-
-    setCoordinates({
-      lat,
-      lng
-    })
-  }
-
-  function convertCoordinatesStringToNumber(coordinate) {
-    if (coordinate[0] === '-') {
-      const newCoordinate = coordinate.substr(1)
-      coordinate = Number(newCoordinate)
-      coordinate = coordinate * -1
-      return coordinate
-    }
-    else {
-      coordinate = Number(coordinate)
-      return coordinate
-    }
-  }
 
   useEffect(()=> {
     loadUser()
@@ -290,7 +267,7 @@ const User = ({ route, navigation }) => {
                     >
                       {user.company.bs.split(' ').map(bs => {
                         return(
-                        <CompanyBsBubble>
+                        <CompanyBsBubble key={bs}>
                           <CompanyBsBubbleText>{bs}</CompanyBsBubbleText>  
                         </CompanyBsBubble>
                       )})}
@@ -299,18 +276,20 @@ const User = ({ route, navigation }) => {
                 </CompanyContainer>
               </Content>
 
-              
               <MapView>
                 <MapboxGL.MapView
-                  styleURL={MapboxGL.StyleURL.Dark}
-                  style={{flex: 1}}>
-                    <MapboxGL.Camera
-                      zoomLevel={6}
-                      centerCoordinate={[coordinates.lat, coordinates.lng]}
-                      animationMode={'flyTo'}
-                      animationDuration={2}
-                    >
-                    </MapboxGL.Camera>
+                  styleURL={MapboxGL.StyleURL.Street}
+                  zoomLevel={30}
+                  centerCoordinate={[Number(user.address.geo.lat), Number(user.address.geo.lng)]}
+                  style={{flex: 1}}
+                >
+                  <MapboxGL.Camera
+                    zoomLevel={6}
+                    centerCoordinate={[Number(user.address.geo.lat), Number(user.address.geo.lng)]}
+                    animationMode={'flyTo'}
+                    animationDuration={0}
+                  >
+                  </MapboxGL.Camera>
                 </MapboxGL.MapView>
               </MapView>
             </CardContainer>

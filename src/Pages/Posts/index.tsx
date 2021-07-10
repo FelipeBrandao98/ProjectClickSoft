@@ -25,7 +25,7 @@ const PostContainer = styled.View`
   padding: 15px;
   padding-left: 20px;
   padding-right: 20px;
-  margin: 15px;
+  margin: 10px;
   border-radius: 15px;
 `
 
@@ -67,6 +67,41 @@ const SeeUserButtonText = styled.Text`
   font-size: 16px;
   font-weight: bold;
   color: #FFF;
+`
+
+const ButtonAddPostContainer = styled.View`
+  height: 70px;
+  justify-content: center;
+  align-items: center;
+  background-color: #FFF;
+  border-top-width: 1px;
+  border-top-color: #616161;
+`
+
+const ButtonAddPost = styled.View`
+  height: 60px;
+  width: 60%;
+  background-color: #7ec26d;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 14px;
+  flex-direction: row;
+`
+
+const PlusButton = styled.View`
+  height: 25px;
+  width: 25px;
+  border: 1.5px solid #FFF;
+  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+`
+
+const ButtonAddPostText = styled.Text`
+  font-size: 20px;
+  color: #ffffff;
+  font-weight: bold;
+  line-height: 25px;
 `
 
 const Posts = ({ navigation }) => {
@@ -127,6 +162,20 @@ const Posts = ({ navigation }) => {
         )}
 
       />
+      <ButtonAddPostContainer>
+        <TouchableOpacity>
+          <ButtonAddPost>
+            <PlusButton>
+              <Icon
+                name="plus"
+                size={20}
+                color="#FFF"
+              />
+            </PlusButton>
+            <ButtonAddPostText>Nova Postagem</ButtonAddPostText>
+          </ButtonAddPost>
+        </TouchableOpacity>
+      </ButtonAddPostContainer>
     </Container>)
 }
 
