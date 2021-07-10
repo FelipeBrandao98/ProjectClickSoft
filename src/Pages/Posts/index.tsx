@@ -163,7 +163,7 @@ const Posts = ({ navigation }) => {
 
       />
       <ButtonAddPostContainer>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('NewPost')}>
           <ButtonAddPost>
             <PlusButton>
               <Icon
