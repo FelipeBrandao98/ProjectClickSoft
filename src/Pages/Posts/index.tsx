@@ -75,7 +75,7 @@ const ButtonAddPostContainer = styled.View`
   align-items: center;
   background-color: #FFF;
   border-top-width: 1px;
-  border-top-color: #616161;
+  border-top-color: #6161611a;
 `
 
 const ButtonAddPost = styled.View`
