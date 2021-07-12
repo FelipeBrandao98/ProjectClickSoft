@@ -1,69 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import { FlatList, RefreshControl, TouchableOpacity } from 'react-native'
+import {
+  ButtonAddPost,
+  ButtonAddPostContainer,
+  ButtonAddPostText,
+  Container,
+  PlusButton
+} from './styles'
+
 import AsyncStorage from '@react-native-community/async-storage'
-import styled from 'styled-components/native'
 import Icon from 'react-native-vector-icons/Feather'
 
 import api from '../../services/api'
 
-// Components
 import ListPosts from '../../components/ListPosts'
-
-
-// Types
-interface PostsData {
-  userId: number
-  id: number
-  title: string
-  body: string
-  deleted?: string
-}
-
-interface postsResponse {
-  data: [PostsData]
-}
-
-
-// Styles
-const Container = styled.View`
-  flex: 1;
-  background-color: #daece9;
-`
-
-const ButtonAddPostContainer = styled.View`
-  height: 70px;
-  justify-content: center;
-  align-items: center;
-  background-color: #FFF;
-  border-top-width: 1px;
-  border-top-color: #6161611a;
-`
-
-const ButtonAddPost = styled.View`
-  height: 60px;
-  width: 60%;
-  background-color: #7ec26d;
-  justify-content: space-around;
-  align-items: center;
-  border-radius: 14px;
-  flex-direction: row;
-`
-
-const PlusButton = styled.View`
-  height: 25px;
-  width: 25px;
-  border: 1.5px solid #FFF;
-  border-radius: 12px;
-  align-items: center;
-  justify-content: center;
-`
-
-const ButtonAddPostText = styled.Text`
-  font-size: 20px;
-  color: #ffffff;
-  font-weight: bold;
-  line-height: 25px;
-`
 
 const Posts = ({ navigation }: any) => {
   const [posts, setPosts] = useState([])

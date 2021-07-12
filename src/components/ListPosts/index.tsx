@@ -1,18 +1,5 @@
 import React from 'react';
 
-interface PostsData {
-  userId: number
-  id: number
-  title: string
-  body: string
-  deleted?: string
-}
-
-interface PropsType {
-  post: PostsData
-  navigation: any
-}
-
 // Componentes
 import DeletedPost from '../DeletedPost';
 import Post from '../Post';
