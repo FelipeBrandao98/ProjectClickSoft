@@ -134,7 +134,7 @@ const SureModal = ({route, navigation}) => {
           <CardTitleText>Atenção</CardTitleText>
         </CardTitle>
           <CardBody>
-            <CardBodyText>Você tem certeza de que quer text este post?</CardBodyText>
+            <CardBodyText>Você tem certeza de que quer {isDeleting ? 'deletar' : 'restaurar'} este post?</CardBodyText>
           </CardBody>
           <CardeButtonArea>
             <TouchableOpacity onPress={() => {
