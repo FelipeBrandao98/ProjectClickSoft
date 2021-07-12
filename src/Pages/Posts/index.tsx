@@ -1,72 +1,33 @@
 import React, { useState, useEffect } from 'react'
-import { FlatList, TouchableOpacity } from 'react-native'
+import { FlatList, RefreshControl, TouchableOpacity } from 'react-native'
+import AsyncStorage from '@react-native-community/async-storage'
 import styled from 'styled-components/native'
 import Icon from 'react-native-vector-icons/Feather'
+
 import api from '../../services/api'
 
+// Components
+import ListPosts from '../../components/ListPosts'
+
+
+// Types
 interface PostsData {
   userId: number
-  id?: number
-  title?: string
-  body?: string
+  id: number
+  title: string
+  body: string
+  deleted?: string
 }
 
 interface postsResponse {
   data: [PostsData]
 }
 
+
+// Styles
 const Container = styled.View`
   flex: 1;
   background-color: #daece9;
-`
-
-const PostContainer = styled.View`
-  background-color: #FFF;
-  padding: 15px;
-  padding-left: 20px;
-  padding-right: 20px;
-  margin: 10px;
-  border-radius: 15px;
-`
-
-const PostHeaderContainer = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-`
-
-const PostTitleContainer = styled.View`
-  width: 80%;
-`
-const PostTitle = styled.Text`
-  font-size: 20px;
-  font-weight: bold;
-  color: #705d5d;
-`
-
-const PostDeleteButton = styled.View`
-  width: 30px;
-  height: 30px;
-`
-
-const PostBody = styled.Text`
-  font-size: 14px;
-  color: #363636;
-  margin-top: 15px;
-`
-
-const SeeUserButton = styled.View`
-  background-color: #7581b4;
-  border-radius: 15px;
-  height: 60px;
-  align-items: center;
-  justify-content: center;
-  margin-top: 20px;
-`
-
-const SeeUserButtonText = styled.Text`
-  font-size: 16px;
-  font-weight: bold;
-  color: #FFF;
 `
 
 const ButtonAddPostContainer = styled.View`
@@ -104,10 +65,11 @@ const ButtonAddPostText = styled.Text`
   line-height: 25px;
 `
 
-const Posts = ({ navigation }) => {
+const Posts = ({ navigation }: any) => {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   async function loadPosts() {
     if (loading) {
@@ -115,14 +77,42 @@ const Posts = ({ navigation }) => {
     }
 
     setLoading(true)
-    const response: postsResponse = await api.get(`posts?id=${page}`)
-    setPosts([... posts, ... response.data])
+    
+    const data = await AsyncStorage.getItem(`@Post:${page}`)
+
+    if (data == null) {
+      const response: postsResponse = await api.get(`posts?id=${page}`)
+
+      let [ dataFromApi ] = response.data
+
+      const updatedData = {
+        id: dataFromApi.id,
+        userId: dataFromApi.userId,
+        title: dataFromApi.title,
+        body: dataFromApi.body,
+        deleted: 'false',
+      }
+
+      const assignableData = [updatedData]
+
+      await AsyncStorage.setItem(`@Post:${page}`, JSON.stringify(assignableData))
+
+      setPosts([... posts, ... assignableData])
+    }
+
+    else {
+      setPosts([... posts, ... JSON.parse(data)])
+    }
+
     setPage(page + 1)
     setLoading(false)
   }
 
-  function deletePost(postID: number) {
-    console.log(`Deletou o post de id:${postID}`)
+  const refresh = () => {
+    setIsRefreshing(true)
+    navigation.replace('Posts')
+    setIsRefreshing(false)
+    console.log('refresh')
   }
 
   useEffect(()=> {
@@ -133,37 +123,18 @@ const Posts = ({ navigation }) => {
     <Container>
       <FlatList
         data={posts}
-        onEndReached={loadPosts}
+        extraData={loading}
         keyExtractor={(post: PostsData) => String(post.id)}
-        renderItem={({item: posts}) => (
-          <PostContainer>
-            <PostHeaderContainer>
-              <PostTitleContainer>
-                <PostTitle>{posts.title}</PostTitle>
-              </PostTitleContainer>
-              <PostDeleteButton>
-                <TouchableOpacity onPress={() => {deletePost(posts.id as number)}}>
-                  <Icon
-                    name="trash"
-                    size={30}
-                    color="#b94a4a"
-                  />
-                </TouchableOpacity>
-              </PostDeleteButton>
-            </PostHeaderContainer>
-            
-            <PostBody>{posts.body}</PostBody>
-            <TouchableOpacity onPress={() => navigation.navigate('User', {userId: posts.userId})}>
-              <SeeUserButton>
-                <SeeUserButtonText>Sobre o Autor</SeeUserButtonText>
-              </SeeUserButton>
-            </TouchableOpacity>
-          </PostContainer>
-        )}
-
+        renderItem={({item: post}) => <ListPosts post={post} navigation={navigation} key={post.id}/>}
+        onEndReached={loadPosts}
+        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh}/>}
       />
+
       <ButtonAddPostContainer>
-        <TouchableOpacity onPress={() => navigation.navigate('NewPost')}>
+        <TouchableOpacity onPress={async () => {
+          navigation.navigate('NewPost')
+          }
+        }>
           <ButtonAddPost>
             <PlusButton>
               <Icon

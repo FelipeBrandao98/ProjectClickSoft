@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { KeyboardAvoidingView, TouchableOpacity } from 'react-native'
+import { useAsyncStorage } from '@react-native-community/async-storage'
 import styled from 'styled-components/native'
 import Icon from 'react-native-vector-icons/Feather'
 
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { TextInput } from 'react-native-gesture-handler'
-import api from '../../services/api'
 
 const BackButtonContainer = styled.View`
   width: 50px;
@@ -109,6 +109,7 @@ const NewPost = ({ navigation }) => {
                     padding: 15,
                     textAlignVertical: 'top'
                   }}
+                  maxLength={300}
                 />
                 <SendButtonContainer>
                   <TouchableOpacity onPress={async () => {
